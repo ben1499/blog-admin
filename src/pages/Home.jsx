@@ -19,6 +19,7 @@ function Home() {
 
     return (
         <div className="blog-list">
+            <Link to="/create"><button>Create Post</button></Link>
             { blogList.map((post) => (
                 <Link to={post._id} key={post._id}>
                     <div className="card">

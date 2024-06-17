@@ -3,6 +3,8 @@ import App from "./App";
 import Home from "./pages/Home";
 import BlogPost from "./pages/BlogPost";
 import BlogForm from "./pages/BlogForm";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
 
 function Router() {
 
@@ -16,12 +18,24 @@ function Router() {
                     element: <Home />
                 },
                 {
+                    path: "/login",
+                    element: <Login />
+                },
+                {
                     path: "/:postId",
                     element: <BlogPost />
                 },
                 {
+                    path: "/create",
+                    element: <ProtectedRoute>
+                        <BlogForm />
+                    </ProtectedRoute>
+                },
+                {
                     path: "/:postId/edit",
-                    element: <BlogForm />
+                    element: <ProtectedRoute>
+                        <BlogForm />
+                    </ProtectedRoute>
                 },
             ]
         }
