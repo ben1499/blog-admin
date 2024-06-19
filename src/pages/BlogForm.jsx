@@ -22,7 +22,7 @@ function BlogForm() {
 
     const { pathname } = useLocation();
     const { postId }  = useParams();
-    const url = "http://localhost:3000";
+    const url = import.meta.env.VITE_API_URL;
     
     const splitPath = pathname.split("/");
 
