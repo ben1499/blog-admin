@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useLocation, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import axiosInstance from "../config/https";
 
 function BlogForm() {
     const [model, setModel] = useState({
@@ -10,9 +11,14 @@ function BlogForm() {
         is_published: false
     });
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const [scope, setScope] = useState(null);
 
     const [checked, setChecked] = useState(false);
+
+    const formRef = useRef();
 
     const { pathname } = useLocation();
     const { postId }  = useParams();
@@ -38,26 +44,33 @@ function BlogForm() {
 
     const submitData = (e) => {
         e.preventDefault();
-        if (scope === "edit") {
-            axios.put(`${url}/posts/${model._id}`, model)
-            .then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            })
-        } else {
-            axios.post(`${url}/posts`, model)
-            .then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            })
+
+        if (formRef.current.reportValidity()) {
+            if (scope === "edit") {
+                axiosInstance.put(`${url}/posts/${model._id}`, model)
+                .then(() => {
+                    navigate("/");
+                }).catch((err) => {
+                    if (err.response.status === 403) {
+                        navigate("/login", { state: { from: location }});
+                    }
+                })
+            } else {
+                axiosInstance.post(`${url}/posts`, model)
+                .then(() => {
+                    navigate("/");
+                }).catch((err) => {
+                    if (err.response.status === 403) {
+                        navigate("/login", { state: { from: location }});
+                    }
+                })
+            }
+
         }
     }
 
     const handleModelChange = (field) => {
         return (e) => {
-            console.log(e.target.value);
             if (field === "title") 
                 setModel({ ...model, title: e.target.value })
             else if (field === "content")
@@ -71,14 +84,14 @@ function BlogForm() {
 
     return (
         <div className="form-container">
-            <form action="">
+            <form ref={formRef} action="">
                 <div className="form-control">
                     <label htmlFor="title">Title</label>
-                    <input id="title" type="text" onChange={handleModelChange("title")} value={model.title} />
+                    <input id="title" type="text" onChange={handleModelChange("title")} value={model.title} required />
                 </div>
                 <div className="form-control">
                     <label htmlFor="content">Content</label>
-                    <textarea name="" id="content" rows="20" onChange={handleModelChange("content")} value={model.content}></textarea>
+                    <textarea name="" id="content" rows="20" onChange={handleModelChange("content")} value={model.content} required></textarea>
                 </div>
                 <div>
                     <input id="publish" type="checkbox" onChange={handleModelChange("is_published")} checked={checked}/>

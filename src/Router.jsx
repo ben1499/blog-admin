@@ -23,7 +23,9 @@ function Router() {
                 },
                 {
                     path: "/:postId",
-                    element: <BlogPost />
+                    element: <ProtectedRoute>
+                        <BlogPost />
+                    </ProtectedRoute>
                 },
                 {
                     path: "/create",

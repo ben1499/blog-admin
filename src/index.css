@@ -39,9 +39,20 @@ a {
   margin-top: 10px;
 }
 
+.mb-1 {
+  margin-bottom: 10px;
+}
+
 header {
   background-color: antiquewhite;
   padding: 12px;
+
+  display: flex;
+  align-items: center;
+}
+
+header ul {
+  list-style-type: none;
 }
 
 .blog-list {
@@ -53,6 +64,17 @@ header {
   border: 1px solid black;
   padding: 12px;
   margin-top: 16px;
+}
+
+.card > p:first-of-type {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card > p:last-child {
+  margin-top: 8px;
+  font-weight: 300;
 }
 
 .card:hover {
@@ -67,10 +89,25 @@ header {
   position: relative;
 }
 
-.blog-view-container > .form-btns {
+.blog-view-container > p:first-of-type {
+  font-weight: 300;
+}
+
+.blog-view-container > .action-container {
   position: absolute;
   right: 10px;
   top: 10px;
+
+  /* display: flex;
+  gap: 8px; */
+}
+
+.action-btns button {
+  padding: 2px;
+}
+
+.action-btns > a:first-child {
+  margin-right: 6px;
 }
 
 .blog-view-content {
@@ -85,12 +122,26 @@ header {
   margin-top: 10px;
 }
 
+
 .comment {
   background-color: aliceblue;
   padding: 8px;
   margin-bottom: 6px;
+  position: relative;
 }
 
+.comment > div {
+  font-weight: 300;
+  margin-top: 8px;
+}
+
+.comment-delete-btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  padding: 2px;
+}
+  
 .form-control {
   display: flex;
   flex-direction: column;

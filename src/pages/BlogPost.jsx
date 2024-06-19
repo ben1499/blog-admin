@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../config/https";
 
 function BlogPost() {
     const { postId } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [ post, setPost ] = useState({});
     const [ comments, setComments ] = useState([]);
+    const [ publishChecked, setPublishChecked ] = useState(false);
 
     const [ model, setModel ] = useState({
         author_name: null,
@@ -28,6 +32,9 @@ function BlogPost() {
         axios.get(`${url}/posts/${postId}`)
         .then((res) => {
             setPost(res.data.data);
+            if (res.data.data.is_published) {
+                setPublishChecked(true);
+            }
         })
 
         axios.get(`${url}/posts/${postId}/comments`)
@@ -60,11 +67,57 @@ function BlogPost() {
         }).catch((err) => console.log(err))
     }
 
+    const handlePostDelete = () => {
+        axiosInstance.delete(`${url}/posts/${postId}`)
+        .then(() => {
+            navigate("/");
+        })
+        .catch((err) => {
+            if (err.response.status === 403) {
+                navigate("/login", {state: { from: location }});
+            }
+        })
+    }
+
+    const deleteComment = (commentId) => {
+        return () => {
+            axiosInstance.delete(`${url}/comments/${commentId}`)
+            .then(() => {
+                fetchComments();
+            }).catch((err) => {
+                if (err.response.status === 403) {
+                    navigate("/login", {state: {from: location}});
+                }
+            });
+        }
+    }
+
+    const togglePublished = () => {
+        axiosInstance.put(`${url}/posts/${post._id}`, {
+            ...post,
+            is_published: !post.is_published
+        })
+        .then(() => {
+            setPost({...post, is_published: !post.is_published})
+            setPublishChecked(!publishChecked);
+        }).catch((err) => {
+            if (err.response.status === 403) {
+                navigate("/login", {state: {from: location}});
+            }
+        })
+    }
+
     return (
         <div className="blog-view-container">
-            <div className="form-btns">
-                <Link to={`/${post._id}/edit`}><button className="edit-btn">Edit</button></Link>
-                <Link to={`/${post._id}/edit`}><button className="edit-btn">Delete</button></Link>
+            <div className="action-container">
+                <div className="action-btns">
+                    <Link to={`/${post._id}/edit`}><button>Edit</button></Link>
+                    <button onClick={handlePostDelete}>Delete</button>
+                </div>
+                <div>
+                    <label htmlFor="">Publish?  </label>
+                    <input type="checkbox" onChange={togglePublished} checked={publishChecked} />
+                </div>
             </div>
 
             <h2>{ post.title }</h2>
@@ -97,6 +150,7 @@ function BlogPost() {
                                     <p>By: {comment.author_name}</p>
                                     <p>{comment.timestamp_formatted}</p>
                                 </div>
+                                <button className="comment-delete-btn" onClick={deleteComment(comment._id)}>Delete</button>
                             </div>
                         ))}
                     </div>

@@ -1,12 +1,19 @@
 import axios from "axios";
 import { useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Login() {
     const url = "http://localhost:3000";
     const [model, setModel] = useState({ username: "", password: "" });
     const [ error, setError ] = useState(null);
 
+    const location = useLocation();
+
+    console.log(location);
+
     const formRef = useRef();
+
+    const navigate = useNavigate();
 
     const submitForm = (e) => {
         e.preventDefault();
@@ -17,6 +24,7 @@ function Login() {
             .then((res) => {
                 console.log(res.data.token);
                 localStorage.setItem("token", res.data.token);
+                navigate("/");
             }).catch((err) => {
                 setError(err.response.data);
             })
@@ -37,6 +45,7 @@ function Login() {
 
     return (
         <div className="login-container">
+            {location.state ? <p className="mb-1">Please login to perform actions</p> : null}
             <form ref={formRef} action="">
                 <div className="form-control">
                     <label htmlFor="">Username</label>
