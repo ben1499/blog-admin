@@ -3,13 +3,12 @@ import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function Login() {
-    const url = "http://localhost:3000";
+    const url = import.meta.env.VITE_API_URL;
     const [model, setModel] = useState({ username: "", password: "" });
     const [ error, setError ] = useState(null);
 
     const location = useLocation();
 
-    console.log(location);
 
     const formRef = useRef();
 
@@ -28,8 +27,6 @@ function Login() {
             }).catch((err) => {
                 setError(err.response.data);
             })
-        } else {
-            console.log("invalid");
         }
     }
 

@@ -7,7 +7,7 @@ function Home() {
 
     const [ blogList, setBlogList ] = useState([]);
 
-    const url = "http://localhost:3000";
+    const url = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         axios.get(`${url}/posts`)
